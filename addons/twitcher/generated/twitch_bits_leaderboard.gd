@@ -50,6 +50,7 @@ static func create(_user_id: String, _user_login: String, _user_name: String, _r
 	return twitch_bits_leaderboard
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchBitsLeaderboard:
 	var result: TwitchBitsLeaderboard = TwitchBitsLeaderboard.new()
 	if d.get("user_id", null) != null:
@@ -63,3 +64,4 @@ static func from_json(d: Dictionary) -> TwitchBitsLeaderboard:
 	if d.get("score", null) != null:
 		result.score = d["score"]
 	return result
+

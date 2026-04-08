@@ -59,6 +59,7 @@ class Body extends TwitchData:
 		return body
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Body:
 		var result: Body = Body.new()
 		if d.get("broadcaster_id", null) != null:
@@ -68,6 +69,7 @@ class Body extends TwitchData:
 		if d.get("choices", null) != null:
 			for value in d["choices"]:
 				result.choices.append(BodyChoices.from_json(value))
+			result.track_data(&"choices", result.choices)
 		if d.get("duration", null) != null:
 			result.duration = d["duration"]
 		if d.get("channel_points_voting_enabled", null) != null:
@@ -97,6 +99,7 @@ class BodyChoices extends TwitchData:
 		return body_choices
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> BodyChoices:
 		var result: BodyChoices = BodyChoices.new()
 		if d.get("title", null) != null:
@@ -124,10 +127,12 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(TwitchPoll.from_json(value))
+			result.track_data(&"data", result.data)
 		return result
 	

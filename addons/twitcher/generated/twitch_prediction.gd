@@ -104,6 +104,7 @@ static func create(_id: String, _broadcaster_id: String, _broadcaster_name: Stri
 	return twitch_prediction
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchPrediction:
 	var result: TwitchPrediction = TwitchPrediction.new()
 	if d.get("id", null) != null:
@@ -121,6 +122,7 @@ static func from_json(d: Dictionary) -> TwitchPrediction:
 	if d.get("outcomes", null) != null:
 		for value in d["outcomes"]:
 			result.outcomes.append(TwitchPredictionOutcome.from_json(value))
+		result.track_data(&"outcomes", result.outcomes)
 	if d.get("prediction_window", null) != null:
 		result.prediction_window = d["prediction_window"]
 	if d.get("status", null) != null:
@@ -132,3 +134,4 @@ static func from_json(d: Dictionary) -> TwitchPrediction:
 	if d.get("locked_at", null) != null:
 		result.locked_at = d["locked_at"]
 	return result
+

@@ -92,6 +92,7 @@ static func create(_broadcaster_id: String, _broadcaster_login: String, _broadca
 	return twitch_channel_information
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchChannelInformation:
 	var result: TwitchChannelInformation = TwitchChannelInformation.new()
 	if d.get("broadcaster_id", null) != null:
@@ -113,9 +114,12 @@ static func from_json(d: Dictionary) -> TwitchChannelInformation:
 	if d.get("tags", null) != null:
 		for value in d["tags"]:
 			result.tags.append(value)
+		result.track_data(&"tags", result.tags)
 	if d.get("content_classification_labels", null) != null:
 		for value in d["content_classification_labels"]:
 			result.content_classification_labels.append(value)
+		result.track_data(&"content_classification_labels", result.content_classification_labels)
 	if d.get("is_branded_content", null) != null:
 		result.is_branded_content = d["is_branded_content"]
 	return result
+

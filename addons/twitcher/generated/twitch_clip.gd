@@ -136,6 +136,7 @@ static func create(_id: String, _url: String, _embed_url: String, _broadcaster_i
 	return twitch_clip
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchClip:
 	var result: TwitchClip = TwitchClip.new()
 	if d.get("id", null) != null:
@@ -173,3 +174,4 @@ static func from_json(d: Dictionary) -> TwitchClip:
 	if d.get("is_featured", null) != null:
 		result.is_featured = d["is_featured"]
 	return result
+

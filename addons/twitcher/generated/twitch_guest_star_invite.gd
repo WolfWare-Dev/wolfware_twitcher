@@ -68,6 +68,7 @@ static func create(_user_id: String, _invited_at: String, _status: String, _is_v
 	return twitch_guest_star_invite
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchGuestStarInvite:
 	var result: TwitchGuestStarInvite = TwitchGuestStarInvite.new()
 	if d.get("user_id", null) != null:
@@ -85,3 +86,4 @@ static func from_json(d: Dictionary) -> TwitchGuestStarInvite:
 	if d.get("is_audio_available", null) != null:
 		result.is_audio_available = d["is_audio_available"]
 	return result
+

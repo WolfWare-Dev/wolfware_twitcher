@@ -26,11 +26,13 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(TwitchGame.from_json(value))
+			result.track_data(&"data", result.data)
 		return result
 	
 
@@ -65,16 +67,20 @@ class Opt extends TwitchData:
 		return opt
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Opt:
 		var result: Opt = Opt.new()
 		if d.get("id", null) != null:
 			for value in d["id"]:
 				result.id.append(value)
+			result.track_data(&"id", result.id)
 		if d.get("name", null) != null:
 			for value in d["name"]:
 				result.name.append(value)
+			result.track_data(&"name", result.name)
 		if d.get("igdb_id", null) != null:
 			for value in d["igdb_id"]:
 				result.igdb_id.append(value)
+			result.track_data(&"igdb_id", result.igdb_id)
 		return result
 	

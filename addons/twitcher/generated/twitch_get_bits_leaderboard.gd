@@ -40,11 +40,13 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(TwitchBitsLeaderboard.from_json(value))
+			result.track_data(&"data", result.data)
 		if d.get("date_range", null) != null:
 			result.date_range = ResponseDateRange.from_json(d["date_range"])
 		if d.get("total", null) != null:
@@ -79,6 +81,7 @@ class ResponseDateRange extends TwitchData:
 		return response_date_range
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseDateRange:
 		var result: ResponseDateRange = ResponseDateRange.new()
 		if d.get("started_at", null) != null:
@@ -135,6 +138,7 @@ class Opt extends TwitchData:
 		return opt
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Opt:
 		var result: Opt = Opt.new()
 		if d.get("count", null) != null:

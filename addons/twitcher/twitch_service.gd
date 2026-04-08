@@ -23,6 +23,16 @@ class UserCacheEntry extends RefCounted:
 		user = u
 		time_to_live = ttl
 
+## Profile cache for a single TwitchUser to prevent frequent image downloads.
+## Stores the user data and the expiration timestamp.
+class UserCacheEntry extends RefCounted:
+	var user: TwitchUser
+	## The timestamp (unix time) when this entry expires
+	var time_to_live: int
+	func _init(u: TwitchUser, ttl: int):
+		user = u
+		time_to_live = ttl
+
 static var _log: TwitchLogger = TwitchLogger.new("TwitchService")
 
 static var instance: TwitchService
@@ -48,6 +58,9 @@ static var instance: TwitchService
 		if val != null:
 			_set_in_child("token", val)
 			update_configuration_warnings()
+			
+## Time in seconds how long the user should be cached before getting reloaded
+@export var user_cache_ttl: int = 3600 # 1 hour
 
 @onready var auth: TwitchAuth
 @onready var eventsub: TwitchEventsub
@@ -358,10 +371,10 @@ func remove_command(command: String) -> void:
 
 
 ## Whispers to another user.
-## @deprecated not supported by twitch anymore
-func whisper(message: String, username: String) -> void:
-	_log.e("Whipser from bots aren't supported by Twitch anymore. See https://dev.twitch.tv/docs/irc/chat-commands/ at /w")
-
+func whisper(message: String, to_user_id: String) -> void:
+	var body: TwitchSendWhisper.Body = TwitchSendWhisper.Body.create(message)
+	var current_user: TwitchUser = await get_current_user()
+	await api.send_whisper(body, current_user.id, to_user_id)
 
 ## Returns the definition of emotes for given channel or for the global emotes.
 ## Key: EmoteID as String | Value: TwitchGlobalEmote / TwitchChannelEmote

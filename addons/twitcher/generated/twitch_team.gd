@@ -85,11 +85,13 @@ static func create(_users: Array[Users], _background_image_url: String, _banner:
 	return twitch_team
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchTeam:
 	var result: TwitchTeam = TwitchTeam.new()
 	if d.get("users", null) != null:
 		for value in d["users"]:
 			result.users.append(Users.from_json(value))
+		result.track_data(&"users", result.users)
 	if d.get("background_image_url", null) != null:
 		result.background_image_url = d["background_image_url"]
 	if d.get("banner", null) != null:
@@ -145,6 +147,7 @@ class Users extends TwitchData:
 		return users
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Users:
 		var result: Users = Users.new()
 		if d.get("user_id", null) != null:

@@ -34,6 +34,7 @@ static func create(_active: bool) -> TwitchUserExtensionPanelUpdate:
 	return twitch_user_extension_panel_update
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchUserExtensionPanelUpdate:
 	var result: TwitchUserExtensionPanelUpdate = TwitchUserExtensionPanelUpdate.new()
 	if d.get("active", null) != null:
@@ -43,3 +44,4 @@ static func from_json(d: Dictionary) -> TwitchUserExtensionPanelUpdate:
 	if d.get("version", null) != null:
 		result.version = d["version"]
 	return result
+

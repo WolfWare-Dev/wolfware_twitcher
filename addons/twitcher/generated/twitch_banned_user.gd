@@ -78,6 +78,7 @@ static func create(_user_id: String, _user_login: String, _user_name: String, _e
 	return twitch_banned_user
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchBannedUser:
 	var result: TwitchBannedUser = TwitchBannedUser.new()
 	if d.get("user_id", null) != null:
@@ -99,3 +100,4 @@ static func from_json(d: Dictionary) -> TwitchBannedUser:
 	if d.get("moderator_name", null) != null:
 		result.moderator_name = d["moderator_name"]
 	return result
+

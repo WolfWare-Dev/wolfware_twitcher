@@ -26,6 +26,7 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
@@ -87,11 +88,13 @@ class ResponseData extends TwitchData:
 		return response_data
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseData:
 		var result: ResponseData = ResponseData.new()
 		if d.get("segments", null) != null:
 			for value in d["segments"]:
 				result.segments.append(TwitchChannelStreamScheduleSegment.from_json(value))
+			result.track_data(&"segments", result.segments)
 		if d.get("broadcaster_id", null) != null:
 			result.broadcaster_id = d["broadcaster_id"]
 		if d.get("broadcaster_name", null) != null:
@@ -146,7 +149,7 @@ class ResponseData extends TwitchData:
 		
 		
 	func _iter_get(iter: Variant) -> Variant:
-		if segments.size() - 1 == _cur_iter && _has_pagination():
+		if segments.size() == _cur_iter && _has_pagination():
 			await next_page()
 		return iter
 
@@ -177,6 +180,7 @@ class ResponseVacation extends TwitchData:
 		return response_vacation
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseVacation:
 		var result: ResponseVacation = ResponseVacation.new()
 		if d.get("start_time", null) != null:
@@ -205,6 +209,7 @@ class ResponsePagination extends TwitchData:
 		return response_pagination
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponsePagination:
 		var result: ResponsePagination = ResponsePagination.new()
 		if d.get("cursor", null) != null:
@@ -255,11 +260,13 @@ class Opt extends TwitchData:
 		return opt
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Opt:
 		var result: Opt = Opt.new()
 		if d.get("id", null) != null:
 			for value in d["id"]:
 				result.id.append(value)
+			result.track_data(&"id", result.id)
 		if d.get("start_time", null) != null:
 			result.start_time = d["start_time"]
 		if d.get("utc_offset", null) != null:

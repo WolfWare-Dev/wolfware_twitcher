@@ -99,6 +99,7 @@ class Body extends TwitchData:
 		return body
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Body:
 		var result: Body = Body.new()
 		if d.get("title", null) != null:
@@ -150,10 +151,12 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(TwitchCustomReward.from_json(value))
+			result.track_data(&"data", result.data)
 		return result
 	

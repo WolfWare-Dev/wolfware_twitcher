@@ -43,6 +43,7 @@ static func create(_id: String, _created_at: String, _position_seconds: int, _de
 	return twitch_stream_marker_created
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchStreamMarkerCreated:
 	var result: TwitchStreamMarkerCreated = TwitchStreamMarkerCreated.new()
 	if d.get("id", null) != null:
@@ -54,3 +55,4 @@ static func from_json(d: Dictionary) -> TwitchStreamMarkerCreated:
 	if d.get("description", null) != null:
 		result.description = d["description"]
 	return result
+

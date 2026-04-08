@@ -46,11 +46,13 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(TwitchBroadcasterSubscription.from_json(value))
+			result.track_data(&"data", result.data)
 		if d.get("pagination", null) != null:
 			result.pagination = ResponsePagination.from_json(d["pagination"])
 		if d.get("points", null) != null:
@@ -99,7 +101,7 @@ class Response extends TwitchData:
 		
 		
 	func _iter_get(iter: Variant) -> Variant:
-		if data.size() - 1 == _cur_iter && _has_pagination():
+		if data.size() == _cur_iter && _has_pagination():
 			await next_page()
 		return iter
 
@@ -122,6 +124,7 @@ class ResponsePagination extends TwitchData:
 		return response_pagination
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponsePagination:
 		var result: ResponsePagination = ResponsePagination.new()
 		if d.get("cursor", null) != null:
@@ -166,11 +169,13 @@ class Opt extends TwitchData:
 		return opt
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Opt:
 		var result: Opt = Opt.new()
 		if d.get("user_id", null) != null:
 			for value in d["user_id"]:
 				result.user_id.append(value)
+			result.track_data(&"user_id", result.user_id)
 		if d.get("first", null) != null:
 			result.first = d["first"]
 		if d.get("after", null) != null:

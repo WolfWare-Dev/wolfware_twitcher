@@ -138,6 +138,7 @@ static func create(_id: String, _stream_id: String, _user_id: String, _user_logi
 	return twitch_video
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchVideo:
 	var result: TwitchVideo = TwitchVideo.new()
 	if d.get("id", null) != null:
@@ -175,6 +176,7 @@ static func from_json(d: Dictionary) -> TwitchVideo:
 	if d.get("muted_segments", null) != null:
 		for value in d["muted_segments"]:
 			result.muted_segments.append(MutedSegments.from_json(value))
+		result.track_data(&"muted_segments", result.muted_segments)
 	return result
 
 
@@ -205,6 +207,7 @@ class MutedSegments extends TwitchData:
 		return muted_segments
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> MutedSegments:
 		var result: MutedSegments = MutedSegments.new()
 		if d.get("duration", null) != null:

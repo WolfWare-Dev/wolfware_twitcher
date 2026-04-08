@@ -36,6 +36,7 @@ static func create(_user_id: String, _user_name: String, _created_at: String) ->
 	return twitch_channel_editor
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchChannelEditor:
 	var result: TwitchChannelEditor = TwitchChannelEditor.new()
 	if d.get("user_id", null) != null:
@@ -45,3 +46,4 @@ static func from_json(d: Dictionary) -> TwitchChannelEditor:
 	if d.get("created_at", null) != null:
 		result.created_at = d["created_at"]
 	return result
+

@@ -40,11 +40,13 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(ResponseData.from_json(value))
+			result.track_data(&"data", result.data)
 		if d.get("all_time_high", null) != null:
 			result.all_time_high = ResponseAllTimeHigh.from_json(d["all_time_high"])
 		if d.get("shared_all_time_high", null) != null:
@@ -72,6 +74,7 @@ class ResponseData extends TwitchData:
 		return response_data
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseData:
 		var result: ResponseData = ResponseData.new()
 		if d.get("current", null) != null:
@@ -155,6 +158,7 @@ class ResponseCurrent extends TwitchData:
 		return response_current
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseCurrent:
 		var result: ResponseCurrent = ResponseCurrent.new()
 		if d.get("id", null) != null:
@@ -176,6 +180,7 @@ class ResponseCurrent extends TwitchData:
 		if d.get("top_contributions", null) != null:
 			for value in d["top_contributions"]:
 				result.top_contributions.append(ResponseTopContributions.from_json(value))
+			result.track_data(&"top_contributions", result.top_contributions)
 		return result
 	
 
@@ -261,6 +266,7 @@ class ResponseTopContributions extends TwitchData:
 		return response_top_contributions
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseTopContributions:
 		var result: ResponseTopContributions = ResponseTopContributions.new()
 		if d.get("user_id", null) != null:
@@ -276,6 +282,7 @@ class ResponseTopContributions extends TwitchData:
 		if d.get("shared_train_participants", null) != null:
 			for value in d["shared_train_participants"]:
 				result.shared_train_participants.append(ResponseSharedTrainParticipants.from_json(value))
+			result.track_data(&"shared_train_participants", result.shared_train_participants)
 		if d.get("started_at", null) != null:
 			result.started_at = d["started_at"]
 		if d.get("expires_at", null) != null:
@@ -319,6 +326,7 @@ class ResponseSharedTrainParticipants extends TwitchData:
 		return response_shared_train_participants
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseSharedTrainParticipants:
 		var result: ResponseSharedTrainParticipants = ResponseSharedTrainParticipants.new()
 		if d.get("broadcaster_user_id", null) != null:
@@ -364,6 +372,7 @@ class ResponseAllTimeHigh extends TwitchData:
 		return response_all_time_high
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseAllTimeHigh:
 		var result: ResponseAllTimeHigh = ResponseAllTimeHigh.new()
 		if d.get("level", null) != null:
@@ -409,6 +418,7 @@ class ResponseSharedAllTimeHigh extends TwitchData:
 		return response_shared_all_time_high
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseSharedAllTimeHigh:
 		var result: ResponseSharedAllTimeHigh = ResponseSharedAllTimeHigh.new()
 		if d.get("level", null) != null:

@@ -120,6 +120,7 @@ static func create(_id: String, _broadcaster_id: String, _broadcaster_name: Stri
 	return twitch_poll
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchPoll:
 	var result: TwitchPoll = TwitchPoll.new()
 	if d.get("id", null) != null:
@@ -135,6 +136,7 @@ static func from_json(d: Dictionary) -> TwitchPoll:
 	if d.get("choices", null) != null:
 		for value in d["choices"]:
 			result.choices.append(Choices.from_json(value))
+		result.track_data(&"choices", result.choices)
 	if d.get("bits_voting_enabled", null) != null:
 		result.bits_voting_enabled = d["bits_voting_enabled"]
 	if d.get("bits_per_vote", null) != null:
@@ -202,6 +204,7 @@ class Choices extends TwitchData:
 		return choices
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Choices:
 		var result: Choices = Choices.new()
 		if d.get("id", null) != null:

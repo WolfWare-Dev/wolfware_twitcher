@@ -92,6 +92,7 @@ static func create(_broadcaster_id: String, _moderator_id: String, _overall_leve
 	return twitch_auto_mod_settings
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchAutoModSettings:
 	var result: TwitchAutoModSettings = TwitchAutoModSettings.new()
 	if d.get("broadcaster_id", null) != null:
@@ -117,3 +118,4 @@ static func from_json(d: Dictionary) -> TwitchAutoModSettings:
 	if d.get("sex_based_terms", null) != null:
 		result.sex_based_terms = d["sex_based_terms"]
 	return result
+

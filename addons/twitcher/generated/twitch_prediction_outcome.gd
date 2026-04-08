@@ -62,6 +62,7 @@ static func create(_id: String, _title: String, _users: int, _channel_points: in
 	return twitch_prediction_outcome
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchPredictionOutcome:
 	var result: TwitchPredictionOutcome = TwitchPredictionOutcome.new()
 	if d.get("id", null) != null:
@@ -75,6 +76,7 @@ static func from_json(d: Dictionary) -> TwitchPredictionOutcome:
 	if d.get("top_predictors", null) != null:
 		for value in d["top_predictors"]:
 			result.top_predictors.append(TopPredictors.from_json(value))
+		result.track_data(&"top_predictors", result.top_predictors)
 	if d.get("color", null) != null:
 		result.color = d["color"]
 	return result
@@ -128,6 +130,7 @@ class TopPredictors extends TwitchData:
 		return top_predictors
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> TopPredictors:
 		var result: TopPredictors = TopPredictors.new()
 		if d.get("user_id", null) != null:

@@ -92,9 +92,11 @@ func _sync_childs() -> void:
 	auth.force_verify = &"true" if force_verify else &"false"
 	
 
-func authorize() -> bool:
+## Authorize twitch if it is logged in it will shortcut and return true
+## force: do the login even when already logged in
+func authorize(force: bool = false) -> bool:
 	_sync_childs()
-	if await auth.login():
+	if await auth.login(force):
 		token_handler.process_mode = Node.PROCESS_MODE_INHERIT
 		return true
 	return false
@@ -115,7 +117,6 @@ static func create_default_oauth_setting() -> OAuthSetting:
 	oauth_setting.device_authorization_url = "https://id.twitch.tv/oauth2/device"
 	oauth_setting.token_url = "https://id.twitch.tv/oauth2/token"
 	oauth_setting.authorization_url = "https://id.twitch.tv/oauth2/authorize"
-	oauth_setting.cache_file = "user://auth.conf"
 	oauth_setting.redirect_url = "http://localhost:7170"
 	return oauth_setting
 	

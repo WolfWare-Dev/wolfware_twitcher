@@ -36,6 +36,7 @@ static func create(_id: String, _description: String, _name: String) -> TwitchCo
 	return twitch_content_classification_label
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchContentClassificationLabel:
 	var result: TwitchContentClassificationLabel = TwitchContentClassificationLabel.new()
 	if d.get("id", null) != null:
@@ -45,3 +46,4 @@ static func from_json(d: Dictionary) -> TwitchContentClassificationLabel:
 	if d.get("name", null) != null:
 		result.name = d["name"]
 	return result
+

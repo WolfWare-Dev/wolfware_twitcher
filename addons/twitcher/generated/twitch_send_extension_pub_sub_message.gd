@@ -52,11 +52,13 @@ class Body extends TwitchData:
 		return body
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Body:
 		var result: Body = Body.new()
 		if d.get("target", null) != null:
 			for value in d["target"]:
 				result.target.append(value)
+			result.track_data(&"target", result.target)
 		if d.get("broadcaster_id", null) != null:
 			result.broadcaster_id = d["broadcaster_id"]
 		if d.get("is_global_broadcast", null) != null:

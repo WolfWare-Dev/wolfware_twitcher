@@ -33,6 +33,7 @@ class Body extends TwitchData:
 		return body
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Body:
 		var result: Body = Body.new()
 		if d.get("conduit_id", null) != null:
@@ -40,6 +41,7 @@ class Body extends TwitchData:
 		if d.get("shards", null) != null:
 			for value in d["shards"]:
 				result.shards.append(BodyShards.from_json(value))
+			result.track_data(&"shards", result.shards)
 		return result
 	
 
@@ -70,6 +72,7 @@ class BodyShards extends TwitchData:
 		return body_shards
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> BodyShards:
 		var result: BodyShards = BodyShards.new()
 		if d.get("id", null) != null:
@@ -119,6 +122,7 @@ class BodyTransport extends TwitchData:
 		return body_transport
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> BodyTransport:
 		var result: BodyTransport = BodyTransport.new()
 		if d.get("method", null) != null:
@@ -159,14 +163,17 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(ResponseData.from_json(value))
+			result.track_data(&"data", result.data)
 		if d.get("errors", null) != null:
 			for value in d["errors"]:
 				result.errors.append(ResponseErrors.from_json(value))
+			result.track_data(&"errors", result.errors)
 		return result
 	
 
@@ -216,6 +223,7 @@ class ResponseData extends TwitchData:
 		return response_data
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseData:
 		var result: ResponseData = ResponseData.new()
 		if d.get("id", null) != null:
@@ -274,6 +282,7 @@ class ResponseTransport extends TwitchData:
 		return response_transport
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseTransport:
 		var result: ResponseTransport = ResponseTransport.new()
 		if d.get("method", null) != null:
@@ -331,6 +340,7 @@ class ResponseErrors extends TwitchData:
 		return response_errors
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseErrors:
 		var result: ResponseErrors = ResponseErrors.new()
 		if d.get("id", null) != null:

@@ -40,6 +40,7 @@ static func create(_active: bool) -> TwitchUserExtensionPanel:
 	return twitch_user_extension_panel
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchUserExtensionPanel:
 	var result: TwitchUserExtensionPanel = TwitchUserExtensionPanel.new()
 	if d.get("active", null) != null:
@@ -51,3 +52,4 @@ static func from_json(d: Dictionary) -> TwitchUserExtensionPanel:
 	if d.get("name", null) != null:
 		result.name = d["name"]
 	return result
+

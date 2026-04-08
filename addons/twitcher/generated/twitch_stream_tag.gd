@@ -43,6 +43,7 @@ static func create(_tag_id: String, _is_auto: bool, _localization_names: Diction
 	return twitch_stream_tag
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchStreamTag:
 	var result: TwitchStreamTag = TwitchStreamTag.new()
 	if d.get("tag_id", null) != null:
@@ -54,3 +55,4 @@ static func from_json(d: Dictionary) -> TwitchStreamTag:
 	if d.get("localization_descriptions", null) != null:
 		result.localization_descriptions = d["localization_descriptions"]
 	return result
+

@@ -36,6 +36,7 @@ static func create(_user_id: String, _user_login: String, _display_name: String)
 	return twitch_user_block_list
 
 
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> TwitchUserBlockList:
 	var result: TwitchUserBlockList = TwitchUserBlockList.new()
 	if d.get("user_id", null) != null:
@@ -45,3 +46,4 @@ static func from_json(d: Dictionary) -> TwitchUserBlockList:
 	if d.get("display_name", null) != null:
 		result.display_name = d["display_name"]
 	return result
+

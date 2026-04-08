@@ -43,11 +43,13 @@ class Response extends TwitchData:
 		return response
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Response:
 		var result: Response = Response.new()
 		if d.get("data", null) != null:
 			for value in d["data"]:
 				result.data.append(ResponseData.from_json(value))
+			result.track_data(&"data", result.data)
 		if d.get("template", null) != null:
 			result.template = d["template"]
 		if d.get("pagination", null) != null:
@@ -93,7 +95,7 @@ class Response extends TwitchData:
 		
 		
 	func _iter_get(iter: Variant) -> Variant:
-		if data.size() - 1 == _cur_iter && _has_pagination():
+		if data.size() == _cur_iter && _has_pagination():
 			await next_page()
 		return iter
 
@@ -191,6 +193,7 @@ class ResponseData extends TwitchData:
 		return response_data
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponseData:
 		var result: ResponseData = ResponseData.new()
 		if d.get("id", null) != null:
@@ -206,12 +209,15 @@ class ResponseData extends TwitchData:
 		if d.get("format", null) != null:
 			for value in d["format"]:
 				result.format.append(value)
+			result.track_data(&"format", result.format)
 		if d.get("scale", null) != null:
 			for value in d["scale"]:
 				result.scale.append(value)
+			result.track_data(&"scale", result.scale)
 		if d.get("theme_mode", null) != null:
 			for value in d["theme_mode"]:
 				result.theme_mode.append(value)
+			result.track_data(&"theme_mode", result.theme_mode)
 		return result
 	
 
@@ -236,6 +242,7 @@ class ResponsePagination extends TwitchData:
 		return response_pagination
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> ResponsePagination:
 		var result: ResponsePagination = ResponsePagination.new()
 		if d.get("cursor", null) != null:
@@ -270,6 +277,7 @@ class Opt extends TwitchData:
 		return opt
 	
 	
+	## Used to transform responses to the current object
 	static func from_json(d: Dictionary) -> Opt:
 		var result: Opt = Opt.new()
 		if d.get("after", null) != null:

@@ -123,7 +123,7 @@ func retry(request: BufferedHTTPClient.RequestData,
 func _handle_error(method_name: String, response: BufferedHTTPClient.ResponseData) -> void:
 	var error_json: String = response.response_data.get_string_from_utf8()
 	var error = JSON.parse_string(error_json)
-	push_error("Problems while calling %s: " % method_name, error["message"])
+	push_error("Problems while calling %s: " % method_name, error["message"] if error and "message" in error else "")
 	_log.d(error_json)
 
 
@@ -141,52 +141,67 @@ static func get_rfc_3339_date_format(time: Variant) -> String:
 var grouped_files: Dictionary[String, Variant] = {}
 
 
+func generate_api() -> void:
+	# Get all classes in the API Folder to remove not needed anymore
+	var existing_classes: PackedStringArray = get_all_classes(api_output_path)
+	
+	for component: Variant in parser.components:
+		prepare_component(component)
+	
+	# Generate TwitchAPI
+	var twitch_api_code: String = twitch_api_header
+	for method: TwitchGenMethod in parser.methods:
+		twitch_api_code += method_code(method)
+	write_output_file(api_output_path + "twitch_api.gd", twitch_api_code)
+	existing_classes.erase("twitch_api.gd")
+	
+	# Generate Components
+	for component: Variant in grouped_files.values():
+		var code: String = ""
+		if component is GroupedComponent:
+			code = group_code(component)
+		else:
+			code = component_code(component, 0)
+		write_output_file(api_output_path + component.get_filename(), code)
+		existing_classes.erase(component.get_filename())
+
+	
+	print("API regenerated you can find it under: %s" % api_output_path)
+
+	for cls in existing_classes:
+		if cls.get_extension() == "gd":
+			var absolute_path: String = ProjectSettings.globalize_path(api_output_path + cls)
+			DirAccess.remove_absolute(absolute_path)
+			DirAccess.remove_absolute(absolute_path + ".uid")
+			print("- got deleted ", cls)
+
+
 func prepare_component(component: TwitchGenComponent) -> void:
 	if component._is_root:
-		var base_name = get_base_name(component._classname)
+		var base_name: String = get_base_name(component._classname)
 		
 		# No suffix class lives by its own
 		if base_name == component._classname:
 			if grouped_files.has(base_name):
 				push_error("That file shouldn't exist: %s" % base_name)
 			component._classname = "Twitch" + component._classname
-			grouped_files[base_name] = component
+			grouped_files[base_name.to_lower()] = component
 		else:
-			var file: GroupedComponent = grouped_files.get(base_name, GroupedComponent.new())
+			var file: GroupedComponent = grouped_files.get_or_add(base_name.to_lower(), GroupedComponent.new())
 			file.base_name = "Twitch" + base_name
 			file.components.append(component)
-			grouped_files[base_name] = file
 			component._classname = component._classname.trim_prefix(base_name)
-			component.set_meta("fqdn", file.base_name + "." + component._classname)
+			component._fqdn = func(): return file.base_name + "." + component._classname
 			var sub_components_to_update: Array[TwitchGenComponent] = component._sub_components.values().duplicate()
 			for sub_component in sub_components_to_update:
 				sub_component._classname = component._classname + sub_component._classname
 				sub_components_to_update.append_array(sub_component._sub_components.values())
-	pass
-	
-	
-	
-func generate_api() -> void:
-	for component: Variant in parser.components:
-		prepare_component(component)
-	
-	# Generate TwitchAPI
-	var twitch_api_code = twitch_api_header
-	for method: TwitchGenMethod in parser.methods:
-		twitch_api_code += method_code(method)
-	write_output_file(api_output_path + "twitch_api.gd", twitch_api_code)
-	
-	# Generate Components
-	for component: Variant in grouped_files.values():
-		var code = ""
-		if component is GroupedComponent:
-			code = group_code(component)
-		else:
-			code = component_code(component, 0)
-		write_output_file(api_output_path + component.get_filename(), code)
-	
-	print("API regenerated you can find it under: %s" % api_output_path)
 
+
+## Return array of the filenames in the folder
+func get_all_classes(folder: String) -> PackedStringArray:
+	return DirAccess.get_files_at(folder)
+	
 
 class GroupedComponent extends RefCounted:
 	var base_name: String
@@ -225,8 +240,9 @@ func field_declaration(field: TwitchGenField) -> String:
 @export var {name}: {type}:
 	set(val): 
 		{name} = val
-		track_data(&"{name}", val)\n""".format({
+		track_data(&"{original_name}", val)\n""".format({
 			"name": field._name,
+			"original_name": field._original_name,
 			"description": ident(field._description, 0, "## "),
 			"type": type
 		})
@@ -274,7 +290,7 @@ func method_parameter(method: TwitchGenMethod, with_type: bool = false, fully_qu
 	
 	
 func path_code(method: TwitchGenMethod) -> String:
-	var body_code : String = "var path = \"%s?\"\n" % method._path
+	var body_code : String = "var path: String = \"%s?\"\n" % method._path
 	
 	if method._contains_optional:
 		body_code += "var optionals: Dictionary[StringName, Variant] = {}\n"
@@ -347,8 +363,6 @@ func paging_code(method: TwitchGenMethod) -> String:
 
 
 func method_code(method: TwitchGenMethod) -> String:
-	print("GENERATE METHOD ", method._name)
-	
 	var result_type = get_type(method._result_type, false, true)
 
 	var template = """
@@ -382,7 +396,7 @@ func {name}({parameters}) -> {result_type}:
 	{paging_code}
 	return parsed_result
 """	
-	
+		
 	return template.format({
 			"summary": method._summary,
 			"parameter_doc": parameter_doc(method),
@@ -474,25 +488,30 @@ static func create({parameters}) -> {classname}:
 	
 func from_json_code(component: TwitchGenComponent) -> String:
 	var code : String = """
+## Used to transform responses to the current object
 static func from_json(d: Dictionary) -> {classname}:
 	var result: {classname} = {classname}.new()
 """.format({"classname": component._classname})
 	for field: TwitchGenField in component._fields:
-		code += "\tif d.get(\"{name}\", null) != null:\n"
+		code += "\tif d.get(\"{original_name}\", null) != null:\n"
 		if field._is_typed_array:
 			code += """
-		for value in d["{name}"]:
+		for value in d["{original_name}"]:
 			result.{name}.append({type}.from_json(value))\n""".lstrip("\n")
+			code += "\t\tresult.track_data(&\"{original_name}\", result.{name})\n"
 		elif field._is_array:
 			code += """
-		for value in d["{name}"]:
+		for value in d["{original_name}"]:
 			result.{name}.append(value)\n""".lstrip("\n")
+			code += "\t\tresult.track_data(&\"{original_name}\", result.{name})\n"
 		elif field._is_sub_class:
-			code += "\t\tresult.{name} = {type}.from_json(d[\"{name}\"])\n"
+			code += "\t\tresult.{name} = {type}.from_json(d[\"{original_name}\"])\n"
 		else:
-			code += "\t\tresult.{name} = d[\"{name}\"]\n"
+			code += "\t\tresult.{name} = d[\"{original_name}\"]\n"
+		
 		code = code.format({
 			"name": field._name,
+			"original_name": field._original_name,
 			"type": get_type(field._type, false)
 		})
 	code += "\treturn result\n"
@@ -552,7 +571,7 @@ func _iter_next(iter: Array) -> bool:
 	
 	
 func _iter_get(iter: Variant) -> Variant:
-	if {data_variable_name}.size() - 1 == _cur_iter && _has_pagination():
+	if {data_variable_name}.size() == _cur_iter && _has_pagination():
 		await next_page()
 	return iter"""
 	var copy_code: String
@@ -574,9 +593,7 @@ func get_type(type: String, is_array: bool = false, full_qualified: bool = false
 	var result_type : String = ""
 	if type.begins_with("#"):
 		var component: TwitchGenComponent = parser.get_component_by_ref(type)
-		result_type = component._classname
-		if full_qualified and component.has_meta("fqdn"):
-			result_type = component.get_meta("fqdn")
+		result_type = component._classname if not full_qualified else component._fqdn.call()
 	else:
 		result_type = type
 	return result_type if not is_array else "Array[%s]" % result_type
@@ -599,7 +616,7 @@ func write_output_file(file_output: String, content: String) -> void:
 		var error_message = error_string(FileAccess.get_open_error());
 		push_error("Failed to open output file: %s\n%s" % [file_output, error_message])
 		return
-	file.store_string(content)
+	file.store_string(content + "\n")
 	file.flush()
 	file.close()
 	
